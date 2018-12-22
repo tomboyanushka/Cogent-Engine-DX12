@@ -10,3 +10,7 @@
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
 #include "d3dx12.h"
+
+#ifndef FRAMEBUFFERCOUNT
+#define FRAMEBUFFERCOUNT 3
+#endif 

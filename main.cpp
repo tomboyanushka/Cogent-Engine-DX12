@@ -13,6 +13,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	dxCore.mainloop();
 
+
+
 	return 0;
 }
 

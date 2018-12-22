@@ -117,3 +117,112 @@ LRESULT DXCore::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+
+//HRESULT DXCore::InitializeDirectX()
+//{
+//
+//
+//	//Initialize DirectX
+//	if (!InitD3D())
+//	{
+//		MessageBox(0, L"Failed to initialize direct3d 12",
+//			L"Error", MB_OK);
+//		Cleanup();
+//		return 1;
+//	}
+//
+//	WaitForPreviousFrame();
+//
+//	CloseHandle(fenceEvent);
+//
+//
+//	return S_OK;
+//}
+
+bool DXCore::InitializeDirectX()
+{
+	HRESULT hr;
+
+	//Creating the device==========================================
+	IDXGIFactory4* dxgiFactory;
+	hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	IDXGIAdapter1* adapter;
+	int adapterIndex = 0;
+	bool adapterFound = false;
+	while (dxgiFactory->EnumAdapters1(adapterIndex, &adapter) != DXGI_ERROR_NOT_FOUND)
+	{
+		DXGI_ADAPTER_DESC1 desc;
+		adapter->GetDesc1(&desc);
+
+		if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+		{
+			adapterIndex++;
+			continue;
+		}
+
+		hr = D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr);
+		if (SUCCEEDED(hr))
+		{
+			adapterFound = true;
+			break;
+		}
+
+		adapterIndex++;
+	}
+	
+	if (!adapterFound)
+	{
+		return false;
+	}
+
+	hr = D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device));
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	//Create the command queue============================================
+	D3D12_COMMAND_QUEUE_DESC cqDesc = {};
+	hr = device->CreateCommandQueue(&cqDesc, IID_PPV_ARGS(&commandQueue));
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	//Create the Swap Chain==============================================
+	DXGI_MODE_DESC backbufferDesc = {};
+	backbufferDesc.Width = Width;
+	backbufferDesc.Height = Height;
+	backbufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	DXGI_SAMPLE_DESC sampleDesc = {};
+	sampleDesc.Count = 1;
+
+	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+	swapChainDesc.BufferCount = frameBufferCount;
+	swapChainDesc.BufferDesc = backbufferDesc;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapChainDesc.OutputWindow = hwnd;
+	swapChainDesc.SampleDesc = sampleDesc;
+	swapChainDesc.Windowed = !FullScreen;
+
+	IDXGISwapChain* tempSwapChain;
+	dxgiFactory->CreateSwapChain(commandQueue, &swapChainDesc, &tempSwapChain);
+
+	swapChain = static_cast<IDXGISwapChain3*>(tempSwapChain);
+
+	frameIndex = swapChain->GetCurrentBackBufferIndex();
+
+	//Create Descripter Heap for Back Buffer RTV=============================
+
+
+
+	return false;
+}
