@@ -10,7 +10,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		MessageBox(0, L"Window Initialization failed", L"Error", MB_OK);
 		return 0;
 	}
-
+	dxCore.InitializeDirectX();
 	dxCore.mainloop();
 
 

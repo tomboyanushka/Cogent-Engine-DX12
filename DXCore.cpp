@@ -94,6 +94,7 @@ void DXCore::mainloop()
 		else
 		{
 			//run game code
+			Render();
 		}
 	}
 }
@@ -293,7 +294,7 @@ void DXCore::UpdatePipeline()
 
 	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
-	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+	const float clearColor[] = { 0.3f, 0.2f, 1.0f, 1.0f };
 	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
 	commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(renderTargets[frameIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
