@@ -10,6 +10,11 @@ public:
 	DXCore();
 	~DXCore();
 
+
+	#define SAFE_RELEASE(p) { if ((p)) { (p)->Release(); (p) = 0; } }
+
+
+
 	//Handle to the window
 	HWND hwnd = NULL;
 
@@ -23,6 +28,8 @@ public:
 	int Width = 1920;
 	int Height = 1080;
 
+	bool Running = false;
+
 	bool FullScreen = false;
 
 	bool InitializeWindow(HINSTANCE hInstance, int ShowWnd, int width, int height, bool fullscreen);
@@ -34,7 +41,7 @@ public:
 	//HRESULT InitializeDirectX();
 
 	bool InitializeDirectX();
-	void Uodate();
+	void Update();
 	void UpdatePipeline();
 	void Render();
 	void Cleanup();
